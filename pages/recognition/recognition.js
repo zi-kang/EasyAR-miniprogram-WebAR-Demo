@@ -32,7 +32,7 @@ Page({
   searchPhoto: function (filePath) {
     console.log(filePath);
     wx.uploadFile({
-      url: 'https://webar.easyar.cn/webar/wxmini.php',
+      url: '您的请求接口',
       filePath,
       name: 'image',
       success: res => {
