@@ -1,0 +1,16 @@
+/**index.wxss**/
+.index-container{
+  position: relative;
+  background-color: #eeeeee;
+}
+.btn-area{
+  position: absolute;
+  right: 20px;
+  left: 20px;
+}
+.recognition{
+  bottom: 35vh;
+}
+.direct{
+  top: 35vh;
+}
