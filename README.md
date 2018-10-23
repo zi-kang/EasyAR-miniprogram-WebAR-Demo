@@ -1,5 +1,5 @@
 # EasyAR-miniprogram-WebAR-Demo
 
-## master分支识别请求方法一
+### master分支传统方法自己加密去识别请求
 
-## dev分支按照token方法进行识别请求，需要用到的插件都在里面
+### dev分支按照token方法进行识别请求，需要用到的插件都在里面
