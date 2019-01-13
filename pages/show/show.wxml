@@ -1,3 +1,0 @@
-<view class="container">
-  <web-view src="https://webar.easyar.cn/webar/?targetId=direct"></web-view>
-</view>

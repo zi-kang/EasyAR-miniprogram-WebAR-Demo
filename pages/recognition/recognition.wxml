@@ -1,6 +1,0 @@
-<camera device-position="back"  flash="off" binderror="error" style="width: 100%; height: {{height}}px"></camera>
-<view class='recognition-container'>
-  <view class="btn-area">
-      <button type="primary" bindtap="takePhoto">{{msg}}</button>
-  </view>
-</view>
