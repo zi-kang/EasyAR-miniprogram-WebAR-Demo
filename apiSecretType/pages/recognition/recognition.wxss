@@ -1,0 +1,16 @@
+/* pages/recognition/recognition.wxss */
+.recognition-container{
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.btn-area{
+  position: absolute;
+  right: 20px;
+  left: 20px;
+  bottom: 10vh;
+  z-index: 1000;
+}

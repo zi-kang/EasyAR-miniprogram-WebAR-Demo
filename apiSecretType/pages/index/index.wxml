@@ -1,0 +1,9 @@
+<!--index.wxml-->
+<view class='index-container' style="width: 100%; height: {{height}}px">
+  <view class="btn-area recognition">
+      <button type="primary" bindtap="goRecognition">识别体验</button>
+  </view>
+  <view class="btn-area direct">
+      <button type="primary" bindtap="goShow">直接体验</button>
+  </view>
+</view>
