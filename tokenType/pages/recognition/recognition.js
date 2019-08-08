@@ -1,5 +1,4 @@
 // pages/recognition/recognition.js
-// import upng from '../../UPNG.js'
 Page({
   data: {
     height: '360',
@@ -7,7 +6,11 @@ Page({
     status: false,
     scanStatus: 'none',
     msg: "请点击识别图片",
-    src: ''
+    src: '',
+    listener: null,
+    isReuqest: false,
+    canvasWidth: '10',
+    canvasHeight:'10',
   },
 
   onLoad: function (options) {
@@ -33,44 +36,7 @@ Page({
   },
 
 
-  urlTobase64(imgPath) {
-    let that = this;
-
-    wx.getFileSystemManager().readFile({
-      filePath: imgPath, //选择图片返回的相对路径
-      encoding: 'base64', //编码格式
-      success: res => { //成功的回调
-        // console.log('data:image/png;base64,' + res.data)
-        that.searchPhotp(res.data)
-      }
-    })
-
-
-    // let canvas = wx.createCanvasContext('firstCanvas')
-    // // 1. 绘制图片至canvas
-    // canvas.drawImage(imgPath, 0, 0, this.data.width, this.data.height);
-    // // 绘制完成后执行回调，API 1.7.0
-    // canvas.draw(false, () => {
-    //   // 2. 获取图像数据， API 1.9.0
-    //   wx.canvasGetImageData({
-    //     canvasId: 'firstCanvas',
-    //     x: 0,
-    //     y: 0,
-    //     width: this.data.width,
-    //     height: this.data.height,
-    //     success(res) {
-    //       // console.log(res)
-    //       // 3. png编码
-    //      let pngData = upng.encode([res.data.buffer], res.width, res.height, 1, 0)
-    //       // 4. base64编码
-    //      let base64 = wx.arrayBufferToBase64(pngData)
-    //       that.searchPhotp(base64)
-    //     }
-      // })
-    // })
-  },
-
-  searchPhotp: function(imageBase64) {
+  searchPhoto: function(imageBase64) {
     let that = this;
     wx.request({
       url: 'https://cn1-crs.easyar.com:8443/search', 
@@ -83,7 +49,9 @@ Page({
       },
       method: 'POST',
       success(res) {
+        that.setData({isReuqest: false});
         if (res.data.statusCode == 0) {
+          that.listener.stop();
           that.setData({ msg: '识别成功'});
           setTimeout(() => {
             console.info('go to webar');
@@ -91,35 +59,68 @@ Page({
               url: '../show/show'
             });
           }, 500);
-        } else {
-          that.status = false;
-          that.setData({ msg: '识别失败，请点击重试'});
         }
       },
 
       fail(err) {
         console.log(err)
         that.status = false;
-        that.setData({ msg: '识别失败，请点击重试'});
+        that.setData({ msg: '识别失败，请点击重试', isReuqest: false});
       }
     })
   },
 
-  takePhoto: function (e) {
-    if (this.status) return;
-    console.log(11111)
-    this.status = true;
-
-    this.ctx.takePhoto({
-      quality: 'low',
-      success: res => {
-        this.setData({ msg: '识别中...', src: res.tempImagePath});
-        this.urlTobase64(res.tempImagePath);
+  transformArrayBufferToBase64: function (frame) {
+    var that = this;
+    const data = new Uint8ClampedArray(frame.data);
+    this.setData({canvasWidth: frame.width, canvasHeight: frame.height, isReuqest: true});
+    wx.canvasPutImageData({
+      canvasId: 'firstCanvas',
+      x: 0,
+      y: 0,
+      width: frame.width,
+      height: frame.height,
+      data: data,
+      success(res) {
+        wx.canvasToTempFilePath({
+          x: 0,
+          y: 0,
+          width: frame.width,
+          height: frame.height,
+          canvasId: 'firstCanvas',
+          success(res) {
+            wx.getFileSystemManager().readFile({
+              filePath: res.tempFilePath, //选择图片返回的相对路径
+              encoding: 'base64', //编码格式
+              success: msg => { //成功的回调
+                that.searchPhoto(msg.data)
+              }
+            })
+          }
+        })
       },
-      fail: err => {
-        this.stopScan();
-        this.setData({ msg: '未识别到目标' });
+      fail(err) {
+        that.setData({isReuqest: false});
       }
     });
+  },
+
+  takePhoto: function (e) {
+    if (this.status) return;
+    this.status = true;
+    const context = wx.createCameraContext()
+    this.listener = context.onCameraFrame((frame) => {
+      if(!this.data.isReuqest) {
+        this.transformArrayBufferToBase64(frame);
+      }
+    });
+    this.listener.start({
+      success: () => {
+        this.setData({ msg: '识别中'});
+      },
+      fail: (err) => {
+        this.setData({ msg: err});
+      }
+    })
   }
 })

@@ -4,7 +4,10 @@ Page({
     height: '360',
     status: false,
     scanStatus: 'none',
-    msg: "请点击识别图片"
+    msg: "请点击识别图片",
+    canvasWidth: '10',
+    canvasHeight: '10',
+    isRequest: false
   },
 
   onLoad: function (options) {
@@ -30,18 +33,15 @@ Page({
   },
 
   searchPhoto: function (filePath) {
-    console.log(filePath);
     wx.uploadFile({
       url: '您的请求接口',
       filePath,
       name: 'image',
       success: res => {
         this.status = false;
-
         let msg = JSON.parse(res.data);
-        if (msg.statusCode != 0) {
-          this.setData({ msg: '未识别到目标，请点击屏幕继续识别' });
-        } else {
+        that.setData({isRequest: false});
+        if (msg.statusCode == 0) {
           this.setData({ msg: '识别成功' });
           setTimeout(() => {
             console.info('go to webar');
@@ -53,27 +53,59 @@ Page({
       },
       fail: err => {
         this.status = false;
-        this.setData({ msg: JSON.stringify(err) });
+        this.setData({ msg: JSON.stringify(err), isRequest: false });
+      }
+    });
+  },
+
+  transformArrayBufferToFilePath: function(frame){
+    var that = this;
+    const data = new Uint8ClampedArray(frame.data);
+    this.setData({canvasWidth: frame.width, canvasHeight: frame.height, isRequest: true});
+    wx.canvasPutImageData({
+      canvasId: 'firstCanvas',
+      x: 0,
+      y: 0,
+      width: frame.width,
+      height: frame.height,
+      data: data,
+      success(res) {
+        wx.canvasToTempFilePath({
+          x: 0,
+          y: 0,
+          width: frame.width,
+          height: frame.height,
+          canvasId: 'firstCanvas',
+          success(res) {
+            that.searchPhoto(res.tempFilePath)
+          }
+        })
+      },
+      fail(err) {
+        that.setData({isRequest: false});
       }
     });
   },
 
   takePhoto: function (e) {
-    console.log(111);
     if (this.status) return;
 
     this.status = true;
 
-    this.ctx.takePhoto({
-      quality: 'normal',
+    const context = wx.createCameraContext()
+
+    this.listener = context.onCameraFrame((frame) => {
+      if(!this.data.isRequest) {
+        this.transformArrayBufferToFilePath(frame);
+      }
+    })
+    this.listener.start({
       success: res => {
         this.setData({ msg: '识别中...' });
-        this.searchPhoto(res.tempImagePath)
       },
       fail: err => {
-        this.stopScan();
-        this.setData({ msg: '未识别到目标' });
+        this.setData({ msg: err});
       }
-    });
+    })
   }
 })
