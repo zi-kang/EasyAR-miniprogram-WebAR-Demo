@@ -1,4 +1,5 @@
 // pages/recognition/recognition.js
+import upng from '../../UPNG.js'
 Page({
   data: {
     height: '360',
@@ -71,38 +72,11 @@ Page({
   },
 
   transformArrayBufferToBase64: function (frame) {
-    var that = this;
     const data = new Uint8ClampedArray(frame.data);
-    this.setData({canvasWidth: frame.width, canvasHeight: frame.height, isReuqest: true});
-    wx.canvasPutImageData({
-      canvasId: 'firstCanvas',
-      x: 0,
-      y: 0,
-      width: frame.width,
-      height: frame.height,
-      data: data,
-      success(res) {
-        wx.canvasToTempFilePath({
-          x: 0,
-          y: 0,
-          width: frame.width,
-          height: frame.height,
-          canvasId: 'firstCanvas',
-          success(res) {
-            wx.getFileSystemManager().readFile({
-              filePath: res.tempFilePath, //选择图片返回的相对路径
-              encoding: 'base64', //编码格式
-              success: msg => { //成功的回调
-                that.searchPhoto(msg.data)
-              }
-            })
-          }
-        })
-      },
-      fail(err) {
-        that.setData({isReuqest: false});
-      }
-    });
+    this.setData({isReuqest: true});
+    let pngData = upng.encode([frame.data], frame.width, frame.height, 16, 0);
+    let base64 = wx.arrayBufferToBase64(pngData);
+    this.searchPhoto(base64)
   },
 
   takePhoto: function (e) {

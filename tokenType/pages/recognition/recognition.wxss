@@ -14,10 +14,3 @@
   bottom: 10vh;
   z-index: 1000;
 }
-
-.canvas-image-ele{
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
-}

@@ -5,5 +5,4 @@
   </view>
   <canvas style="width: {{width}}px; height: {{height}}px; opacity: 0" canvas-id="firstCanvas"></canvas>
 </view>
-<canvas canvas-id='firstCanvas' class='canvas-image-ele' style="width: {{canvasWidth}}px; height: {{canvasHeight}}px"></canvas>
 
