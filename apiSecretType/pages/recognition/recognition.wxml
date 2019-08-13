@@ -1,7 +1,6 @@
-<camera device-position="back" frame-size="small"   flash="off" binderror="error" style="width: 100%; height: {{height}}px"></camera>
+<camera device-position="back"   flash="off" binderror="error" style="width: 100%; height: {{height}}px"></camera>
 <view class='recognition-container'>
   <view class="btn-area">
       <button type="primary" bindtap="takePhoto">{{msg}}</button>
   </view>
 </view>
-<canvas canvas-id='firstCanvas' class='canvas-image-ele' style="width: {{canvasWidth}}px; height: {{canvasHeight}}px"></canvas>
