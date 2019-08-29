@@ -45,7 +45,7 @@ Page({
         image: imageBase64
       },
       header: {
-        'Authorization': '6f2JkthQHm9rBVhsXxl9DNUPb+6H7eaReuzzza3PdYMC77cRX24kp6Hf6srJMgZwL5Z7KR0AjUKEYlxszht8qA==',
+        'Authorization': 'jfI9YqnhofaI1mqA80TpQ5QCAp5b8McpOYVjkBpBmLQaN/w/SRRv0UYFK8pp3IasKHkAif/+piSxsz1VJoCscw==',
         'content-type': 'application/json' // 默认值
       },
       method: 'POST',
@@ -90,10 +90,11 @@ Page({
     });
     this.listener.start({
       success: () => {
-        this.setData({ msg: '识别中'});
+        console.log('监听成功')
       },
       fail: (err) => {
-        this.setData({ msg: err});
+        console.log('监听失败')
+        console.log(err)
       }
     })
   }
